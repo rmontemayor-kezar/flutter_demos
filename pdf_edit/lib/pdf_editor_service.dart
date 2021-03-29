@@ -9,13 +9,14 @@ import 'package:pdf/pdf.dart' as pdf;
 import 'package:pdf/widgets.dart' as pdfWidgets;
 import 'package:pdf_image_renderer/pdf_image_renderer.dart' as pdfRender;
 
-class PdfRawImage  extends pdfWidgets.ImageProvider {
+class PdfRawImage extends pdfWidgets.ImageProvider {
   final Uint8List data;
   final Size size;
   pdf.PdfDocument document;
 
-
-  PdfRawImage({this.data, this.size}) : super(size.width.toInt(), size.height.toInt(), pdf.PdfImageOrientation.topLeft, 72.0);
+  PdfRawImage({this.data, this.size})
+      : super(size.width.toInt(), size.height.toInt(),
+            pdf.PdfImageOrientation.topLeft, 72.0);
 
   @override
   pdf.PdfImage buildImage(pdfWidgets.Context context, {int width, int height}) {
@@ -31,10 +32,8 @@ class _PdfFileHandler {
   static Future<File> getFileFromAssets(String filename) async {
     assert(filename != null);
     final byteData = await rootBundle.load(filename);
-    var name = filename
-        .split(Platform.pathSeparator)
-        .last;
-    var absoluteName = '${(await getLibraryDirectory()).path}/$name';
+    var name = filename.split(Platform.pathSeparator).last;
+    var absoluteName = '${(await getTemporaryDirectory()).path}/$name';
     final file = File(absoluteName);
 
     await file.writeAsBytes(byteData.buffer.asUint8List());
@@ -68,7 +67,7 @@ class _PdfFileHandler {
 
   static Future<File> save(pdfWidgets.Document document, String filename,
       {String directory}) async {
-    final dir = directory ?? (await getApplicationDocumentsDirectory()).path;
+    final dir = directory ?? (await getExternalStorageDirectory()).path;
     final file = File('$dir${Platform.pathSeparator}$filename');
     return file.writeAsBytes(await document.save());
   }
@@ -90,8 +89,8 @@ class PdfMutablePage {
 
   pdfWidgets.Page build(pdfWidgets.Document document) {
     _background.document = document.document;
-    final format = pdf.PdfPageFormat(
-        _background.size.width, _background.size.height);
+    final format =
+        pdf.PdfPageFormat(_background.size.width, _background.size.height);
     return pdfWidgets.Page(
         pageFormat: format,
         orientation: pdfWidgets.PageOrientation.portrait,
@@ -108,8 +107,11 @@ class PdfMutablePage {
 
 class PdfImageProvider extends ImageProvider {
   @override
-  ImageStreamCompleter load(Object key, Future<
-      Codec> Function(Uint8List bytes, {bool allowUpscaling, int cacheHeight, int cacheWidth}) decode) {
+  ImageStreamCompleter load(
+      Object key,
+      Future<Codec> Function(Uint8List bytes,
+              {bool allowUpscaling, int cacheHeight, int cacheWidth})
+          decode) {
     // TODO: implement load
     throw UnimplementedError();
   }
@@ -119,7 +121,6 @@ class PdfImageProvider extends ImageProvider {
     // TODO: implement obtainKey
     throw UnimplementedError();
   }
-
 }
 
 class PdfMutableDocument {
@@ -133,8 +134,8 @@ class PdfMutableDocument {
   static Future<PdfMutableDocument> asset(String assetName) async {
     var copy = await _PdfFileHandler.getFileFromAssets(assetName);
     final rawImages = await _PdfFileHandler.loadPdf(copy.path);
-    final pages = rawImages.map((raw) => PdfMutablePage(background: raw))
-        .toList();
+    final pages =
+        rawImages.map((raw) => PdfMutablePage(background: raw)).toList();
     return PdfMutableDocument._(
         pages: pages, filePath: copy.uri.pathSegments.last);
   }

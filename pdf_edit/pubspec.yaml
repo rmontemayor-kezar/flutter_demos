@@ -60,6 +60,7 @@ flutter:
   assets:
     - assets/
     - assets/test.pdf
+    - assets/nurse_contract.pdf
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

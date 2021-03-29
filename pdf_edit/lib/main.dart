@@ -32,7 +32,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   void _edit() async {
-    PdfMutableDocument doc = await PdfMutableDocument.asset("assets/test.pdf");
+    PdfMutableDocument doc =
+        await PdfMutableDocument.asset("assets/nurse_contract.pdf");
     _editDocument(doc);
     await doc.save(filename: "modified.pdf");
     print("PDF Edition Done");
@@ -40,7 +41,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _editDocument(PdfMutableDocument document) {
     var page = document.getPage(0);
-    page.add(item: pdfWidget.Positioned(
+    page.add(
+        item: pdfWidget.Positioned(
       left: 0.0,
       top: 0.0,
       child: pdfWidget.Text("COUCOU",
